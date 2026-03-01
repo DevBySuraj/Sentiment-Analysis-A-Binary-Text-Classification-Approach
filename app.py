@@ -22,6 +22,8 @@ log_reg = pickle.load(open('log_reg.pkl', 'rb'))
 def home():
     return render_template('home.html')
 
+
+## this predict_api is throught the postman api to check
 @app.route('/predict_api', methods = ['POST'])
 def predict_api():
     data = request.json['data']
@@ -36,13 +38,15 @@ def predict_api():
     #return 2d array [[30.4]], need for first value only
     return jsonify(output[0])
 
-# @app.route('/predict', methods = ['POST'])
-# def predict():
-#     data = [float(x) for x in request.form.values()] #forgot the () gave an error
-#     final_input  = scaler.transform(np.array(data).reshape(1,-1))
-#     print(final_input)
-#     output = regmodel.predict(final_input)[0]
-#     return render_template("home.html", prediction_text = "The Predicted House price is {}".format(output))
+
+#for the web interface 
+@app.route('/predict', methods = ['POST'])
+def predict():
+    data = request.form['review'] #forgot the () gave an error
+    final_input  = tfidf.transform([data])
+    # print(final_input)
+    output = log_reg.predict(final_input)[0]
+    return render_template("home.html", prediction_text = "The predicted review is {}".format(output))
 
 if __name__ == "__main__":
     app.run(debug = True)
